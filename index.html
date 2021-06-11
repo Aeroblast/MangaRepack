@@ -1,0 +1,311 @@
+﻿<!doctype html>
+<html lang="zh-CN">
+
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Manga Repack</title>
+
+  <link rel="stylesheet" href="lib/bootstrap/css/bootstrap.min.css">
+  <link rel="stylesheet" href="main.css">
+
+</head>
+
+<body>
+  <div id="main">
+    <ul class="nav nav-tabs">
+      <li class="nav-item dropdown">
+        <a class="nav-link dropdown-toggle" data-toggle="dropdown" href="#">{{ui.menu_file}}</a>
+        <div class="dropdown-menu">
+          <a class="dropdown-item" href="#" v-on:click="ImportZip">{{ui.menu_import}}</a>
+          <a class="dropdown-item" href="#" v-on:click="Save">{{ui.menu_save}}</a>
+        </div>
+      </li>
+      <li class="nav-item"><a class="nav-link active" data-toggle="tab" href="#settings">{{ui.nav_settings}}</a></li>
+      <li class="nav-item"><a class="nav-link" id="nav_content" data-toggle="tab"
+          href="#content_editor">{{ui.nav_content}}</a></li>
+      <li class="nav-item"><a class="nav-link" id="nav_metadata_editor" data-toggle="tab"
+          href="#metadata_editor">{{ui.nav_metadata}}</a></li>
+      <li class="nav-item"><a class="nav-link" id="nav_preview" data-toggle="tab" href="#preview"
+          onclick="MapSourceName()">{{ui.nav_preview}}</a>
+      </li>
+      <li class="nav-item"><a class="nav-link" data-toggle="tab" href="#about">{{ui.nav_about}}</a></li>
+      <li id="log" onclick="ToggleLog()">
+        <component v-for="msg in log" v-bind:is="msg.type" :class="'alert alert-'+msg.bsClass" :time="msg.time"
+          :key="msg.id" :active_id="log[log.length-1].id" :log_var="log_var" :source_count="sources.length"
+          :title="msg.content">
+          {{msg.content}}
+        </component>
+      </li>
+    </ul>
+    <div class="tab-content">
+      <div class="tab-pane container active" id="settings">
+        <form class="p-3">
+          <div class="form-group row">
+            <label class="col-form-label col-3">Language</label>
+            <select class="form-control col-3" v-model="settings_lang">
+              <option value="zh-CN">简体中文</option>
+              <option value="en">English</option>
+            </select>
+          </div>
+          <div class="form-group row">
+            <label for="settings_zip_encoding" class="col-form-label col-3">{{ui.settings_zip_encoding}}</label>
+            <select class="form-control col-3" id="settings_zip_encoding" v-model="settings_zip_encoding">
+              <option>shift-jis</option>
+              <option>gbk</option>
+              <option>big5</option>
+            </select>
+          </div>
+          <div class="form-group row">
+            <label for="settings_sort" class="col-form-label col-3">{{ui.settings_sort}}</label>
+            <select class="form-control col-3" id="settings_sort" v-model="settings_sort">
+              <option value="SortByFullPath">{{ui.settings_SortByFullPath}}</option>
+              <option value="SortByFileName">{{ui.settings_SortByFileName}}</option>
+            </select>
+          </div>
+        </form>
+      </div>
+      <!--End of settings-->
+      <div class="tab-pane container fade" id="content_editor">
+        <div id="pageListWarpper" ref="pageList">
+          <div class="pageListItem" v-for="(s,i) in sources" :key="s" @click="ClickItem(s)"
+            :data-select="selected==-1?'no-select':(selected==0)?(i==0?'cover':'none'):(selected==i)?'right':((i==(selected+1))?'left':'none')">
+            <img :src="s.thumbURL">
+            <label class="short_filename"><span>{{s.filename}}</span></label>
+            <div class="landmark_label" :data-display="s.landmark?'true':''">
+              <span class="alert-primary">{{s.landmark}}</span>
+            </div>
+            <div class="toc_label" :data-display="s.toc?'true':''">
+              <span class="alert-success">{{s.toc}}</span>
+            </div>
+          </div>
+        </div>
+        <div id="editorZone">
+          <div id="pageViewerWarpper">
+            <canvas id="pageViewer" ref="pageViewer"></canvas>
+          </div>
+          <ul class="nav nav-tabs" id="pageEditor" :data-sp="pageEditorSp">
+            <li class="nav-item"><a class="nav-link" href="#"
+                v-on:click="AddPlaceholder(0)">{{ui.editor_add_placeholder}}</a></li>
+            <li class="nav-item"><a class="nav-link" data-toggle="tab" href="#tocEntryRight"
+                id="nav_tocEntryRight">{{ui.editor_edit_this_page}}</a></li>
+            <li class="nav-item"><a class="nav-link" href="#"
+                v-on:click="AddPlaceholder(1)">{{ui.editor_add_placeholder}}</a></li>
+            <li class="nav-item"><a class="nav-link" data-toggle="tab" href="#tocEntryLeft"
+                id="nav_tocEntryLeft">{{ui.editor_edit_this_page}}</a></li>
+          </ul>
+          <div class="tab-content">
+            <div class="tab-pane container" id="tocEntryLeft">
+              <label>{{navEditorL_filename}}</label>
+              <div class="input-group mb-3 w-50">
+                <div class="input-group-prepend">
+                  <label class="input-group-text alert-primary">{{ui.editor_guide}}</label>
+                </div>
+                <select class="custom-select" v-model="navEditorL_landmark" onblur="logValueChangeEnd()">
+                  <option value="none">- - -</option>
+                  <option value="cover">表紙</option>
+                  <option value="toc">目次</option>
+                  <option value="bodymatter">本編</option>
+                  <option value="colophon">奥付</option>
+                </select>
+              </div>
+              <div class="input-group mb-3 w-50">
+                <div class="input-group-prepend">
+                  <span class="input-group-text alert-success">{{ui.editor_toc_entry}}</span>
+                </div>
+                <input type="text" class="form-control" placeholder="- - -" v-model="navEditorL_toc"
+                  onblur="logValueChangeEnd()">
+              </div>
+            </div>
+            <div class="tab-pane container" id="tocEntryRight">
+              <label>{{navEditorR_filename}}</label>
+              <div class="input-group mb-3 w-50">
+                <div class="input-group-prepend">
+                  <label class="input-group-text alert-primary">{{ui.editor_guide}}</label>
+                </div>
+                <select class="custom-select" v-model="navEditorR_landmark" onblur="logValueChangeEnd()">
+                  <option value="none">- - -</option>
+                  <option value="cover">表紙</option>
+                  <option value="toc">目次</option>
+                  <option value="bodymatter">本編</option>
+                  <option value="colophon">奥付</option>
+                </select>
+              </div>
+              <div class="input-group mb-3 w-50">
+                <div class="input-group-prepend">
+                  <span class="input-group-text alert-success">{{ui.editor_toc_entry}}</span>
+                </div>
+                <input type="text" class="form-control" placeholder="- - -" v-model="navEditorR_toc"
+                  onblur="logValueChangeEnd()">
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <!--End of content_editor-->
+      <div class="tab-pane container fade" id="metadata_editor">
+
+        <form class="p-3">
+          <div class="input-group mb-3 w-25">
+            <div class="input-group-prepend">
+              <label class="input-group-text" for="metadata_language">{{ui.metadata_language}}</label>
+            </div>
+            <select class="custom-select" id="metadata_language" v-model="metadata_language">
+              <option>ja</option>
+              <option>zh-CN</option>
+              <option>zh-TW</option>
+            </select>
+          </div>
+          <div class="input-group mb-3">
+            <div class="input-group-prepend">
+              <span class="input-group-text" id="basic-addon1">{{ui.metadata_title}}</span>
+            </div>
+            <input type="text" class="form-control" placeholder="" v-model="metadata_title">
+            <div class="input-group-prepend">
+              <label class="input-group-text" for="file-as" data-toggle="tooltip"
+                v-bind:title="ui.metadata_file_as_tip">{{ui.metadata_file_as}}</label>
+            </div>
+            <input type="text" class="form-control" v-model="metadata_title_file_as">
+          </div>
+          <div class="nav-item dropdown mb-3">
+            <button type="button" class="btn btn-primary dropdown-toggle"
+              data-toggle="dropdown">{{ui.metadata_add_optional}}</button>
+            <div class="dropdown-menu">
+              <a class="dropdown-item" href="#"
+                v-on:click="AddMetadataInput('metadata-input-creator')">{{ui.metadata_creator}}</a>
+              <a class="dropdown-item" href="#" v-on:click="AddMetadataInput('metadata-input-date')"
+                data-toggle="tooltip" data-placement="right" :title="ui.metadata_onlyone"
+                :data-dropdown-item-disable="metadataContainsDate">{{ui.metadata_date}}</a>
+              <a class="dropdown-item" href="#"
+                v-on:click="AddMetadataInput('metadata-input-publisher')">{{ui.metadata_publisher}}</a>
+              <a class="dropdown-item" href="#"
+                v-on:click="AddMetadataInput('metadata-input-source')">{{ui.metadata_source}}</a>
+              <a class="dropdown-item" href="#"
+                v-on:click="AddMetadataInput('metadata-input-general')">{{ui.metadata_meta}}</a>
+            </div>
+          </div>
+          <div id="metadata_editor_optional">
+            <component v-for="metadataInput in metadataInputs" v-bind:is="metadataInput.type" :ui="ui"
+              :id="metadataInput.id" :key="metadataInput.id"></component>
+          </div>
+          <div id="metadata_editor_templates" style="display: none;">
+            <div class="input-group mb-3">
+              <div class="input-group-prepend">
+                <span class="input-group-text">{{ui.metadata_creator}}</span>
+              </div>
+              <input type="text" class="form-control" data-v-model="t_value">
+              <div class="input-group-prepend">
+                <label class="input-group-text" data-toggle="tooltip"
+                  v-bind:title="ui.metadata_file_as_tip">{{ui.metadata_file_as}}</label>
+              </div>
+              <input type="text" class="form-control" data-v-model="t_file_as">
+              <div class="input-group-append">
+                <button class="btn btn-outline-danger" type="button"
+                  data-v-on:click="Destory">{{ui.metadata_delete}}</button>
+              </div>
+              <div class="metadata-output" data-v-bind:data-xml="xml"></div>
+            </div>
+            <!--End of creator-->
+            <div class="input-group mb-3">
+              <div class="input-group-prepend">
+                <label class="input-group-text">{{ui.metadata_date}}</label>
+              </div>
+              <input type="date" data-v-model="t_value">
+              <div class="input-group-append">
+                <button class="btn btn-outline-danger" type="button"
+                  data-v-on:click="Destory">{{ui.metadata_delete}}</button>
+              </div>
+              <div class="metadata-output" data-v-bind:data-xml="xml"></div>
+            </div>
+            <!--End of date-->
+            <div class="input-group mb-3">
+              <div class="input-group-prepend">
+                <span class="input-group-text">{{ui.metadata_publisher}}</span>
+              </div>
+              <input type="text" class="form-control" data-v-model="t_value">
+              <div class="input-group-prepend">
+                <label class="input-group-text" data-toggle="tooltip"
+                  v-bind:title="ui.metadata_file_as_tip">{{ui.metadata_file_as}}</label>
+              </div>
+              <input type="text" class="form-control" data-v-model="t_file_as">
+              <div class="input-group-append">
+                <button class="btn btn-outline-danger" type="button"
+                  data-v-on:click="Destory">{{ui.metadata_delete}}</button>
+              </div>
+              <div class="metadata-output" data-v-bind:data-xml="xml"></div>
+            </div>
+            <!--End of publisher-->
+            <div class="input-group mb-3">
+              <div class="input-group-prepend">
+                <span class="input-group-text">{{ui.metadata_source}}</span>
+              </div>
+              <input type="text" class="form-control" data-v-model="t_value">
+              <div class="input-group-append">
+                <button class="btn btn-outline-danger" type="button"
+                  data-v-on:click="Destory">{{ui.metadata_delete}}</button>
+              </div>
+              <div class="metadata-output" data-v-bind:data-xml="xml"></div>
+            </div>
+            <!--End of source-->
+            <div class="input-group mb-3">
+              <div class="input-group-prepend">
+                <span class="input-group-text">{{ui.metadata_meta}}</span>
+              </div>
+              <div class="input-group-prepend">
+                <span class="input-group-text">{{ui.metadata_meta_property}}</span>
+              </div>
+              <input type="text" class="form-control" data-v-model="t_property">
+              <div class="input-group-prepend">
+                <label class="input-group-text" data-toggle="tooltip"
+                  data-v-bind:title="ui.metadata_file_as_tip">{{ui.metadata_meta_value}}</label>
+              </div>
+              <input type="text" class="form-control" data-v-model="t_value">
+              <div class="input-group-append">
+                <button class="btn btn-outline-danger" type="button"
+                  data-v-on:click="Destory">{{ui.metadata_delete}}</button>
+              </div>
+              <div class="metadata-output" data-v-bind:data-xml="xml"></div>
+            </div>
+            <!--End of genaral meta-->
+          </div>
+          <!--End of templates-->
+        </form>
+      </div>
+      <div class="tab-pane container fade" id="preview">
+        <div id="previewNav" ref="pageList">
+          <div class="pageListItem" v-for="(s,i) in sources" :key="s">
+            <img :src="s.thumbURL">
+            <label class="short_filename"><span>{{s.filename}}</span></label>
+            <div class="landmark_label" :data-display="s.landmark?'true':''">
+              <span class="alert-primary">{{s.landmark}}</span>
+            </div>
+            <div class="toc_label" :data-display="s.toc?'true':''">
+              <span class="alert-success">{{s.toc}}</span>
+            </div>
+          </div>
+        </div>
+        <div><button v-on:click="Save">{{ui.menu_save}}</button></div>
+
+      </div>
+      <div class="tab-pane container fade" id="about">
+        <h2>Manga Repack</h2>
+        <p>{{ui.about_content}}</p>
+      </div>
+    </div>
+  </div>
+
+  <input id="file-input" type="file" accept=".zip,.jpg,.jpeg,.png" multiple style="display: none;" />
+  <script src="lib/jquery.min.js"></script>
+  <script src="lib/popper.min.js"></script>
+  <script src="lib/bootstrap/js/bootstrap.min.js"></script>
+  <script src="lib/vue.global.prod.js"></script>
+  <script src="lib/zip.min.js"></script>
+  <script src="lib/split.min.js"></script>
+  <script src="locale.js"></script>
+  <script src="utils.js"></script>
+  <script src="metadata-input.js"></script>
+  <script src="save-epub.js"></script>
+  <script src="main.js"></script>
+</body>
+
+</html>
