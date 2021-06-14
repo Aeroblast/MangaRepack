@@ -51,9 +51,11 @@
           <div class="form-group row">
             <label for="settings_zip_encoding" class="col-form-label col-3">{{ui.settings_zip_encoding}}</label>
             <select class="form-control col-3" id="settings_zip_encoding" v-model="settings_zip_encoding">
+              <option>utf-8</option>
               <option>shift-jis</option>
               <option>gbk</option>
               <option>big5</option>
+              <!-- https://developer.mozilla.org/en-US/docs/Web/API/Encoding_API/Encodings -->
             </select>
           </div>
           <div class="form-group row">
