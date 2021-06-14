@@ -39,7 +39,7 @@ async function SaveEpub() {
     const blobWriter = new zip.BlobWriter("application/zip");
     const writer = new zip.ZipWriter(blobWriter);
 
-    await writer.add("mimetype", new zip.TextReader("application/epub+zip"), { level: 0 });
+    await writer.add("mimetype", new zip.TextReader("application/epub+zip"), { level: 0, extendedTimestamp: false });
     await writer.add("META-INF/container.xml", new zip.TextReader(container));
     await writer.add("OEBPS/manga.opf", new zip.TextReader(CreatePackage(sources)));
     await writer.add("OEBPS/nav.xhtml", new zip.TextReader(CreateNav(sources)));
