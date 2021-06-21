@@ -116,7 +116,11 @@
                   <span class="input-group-text alert-success">{{ui.editor_toc_entry}}</span>
                 </div>
                 <input type="text" class="form-control" placeholder="- - -" v-model="navEditorL_toc"
-                  onblur="logValueChangeEnd()">
+                  onblur="logValueChangeEnd()" />
+              </div>
+              <div class="input-group mb-3">
+                <button class="btn btn-outline-danger" type="button"
+                  v-on:click="DeletePage(1)">{{ui.editor_delete_page}}</button>
               </div>
             </div>
             <div class="tab-pane container" id="tocEntryRight">
@@ -138,7 +142,11 @@
                   <span class="input-group-text alert-success">{{ui.editor_toc_entry}}</span>
                 </div>
                 <input type="text" class="form-control" placeholder="- - -" v-model="navEditorR_toc"
-                  onblur="logValueChangeEnd()">
+                  onblur="logValueChangeEnd()" />
+              </div>
+              <div class="input-group mb-3">
+                <button class="btn btn-outline-danger" type="button"
+                  v-on:click="DeletePage(0)">{{ui.editor_delete_page}}</button>
               </div>
             </div>
           </div>
