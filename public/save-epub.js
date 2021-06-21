@@ -75,7 +75,7 @@ function CreatePackage(sources) {
     let itemrefs = "";
     let items = "";
     let items2 = "";
-    let metadata = GetMetadataXml();
+    let metadata = vm.$refs.metadataEditor.GetMetadataXml();
     metadata += "    <dc:identifier id=\"uuid\">" + uuidv4() + "</dc:identifier>\n";
     metadata += "    <meta property=\"dcterms:modified\">" + (new Date().toISOString().substr(0, 19) + 'Z') + "</meta>\n";
     let counter = 0;
@@ -102,7 +102,7 @@ function CreateNav(sources) {
     let landmark = "";
     for (const src of sources) {
         if (src.landmark) {
-            landmark += "        <li><a epub:type=\"" + src.guide + "\" href=\"Text/" + src.id + ".xhtml\">" + MapLandmark(src.landmark, vm.metadata_language) + "</a></li>\n";
+            landmark += "        <li><a epub:type=\"" + src.guide + "\" href=\"Text/" + src.id + ".xhtml\">" + MapLandmark(src.landmark, vm.$refs.metadataEditor.language) + "</a></li>\n";
         }
         if (src.toc) {
             toc += "        <li><a href=\"Text/" + src.id + ".xhtml\">" + src.toc + "</a></li>\n";
