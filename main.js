@@ -1,8 +1,4 @@
 ﻿
-const editor = {
-    pages: [],
-}
-
 const fileInput = document.getElementById("file-input");
 const ratio = 1.414;//h/w
 var globleCounter = 0;
@@ -11,7 +7,6 @@ const vueSettings = {
     data() {
         return {
             ui: locale_en,
-            editor: editor,
             log: [],
             log_var: "",
             sources: [],
@@ -120,6 +115,14 @@ const vueSettings = {
             }
             this.metadataInputs.push({ id: GenarateId(), type: type })
         },
+        DeletePage(offset) {
+            if (this.selected < 0) return;
+            if (this.selected + offset >= this.sources.length) return;
+            let p = this.sources[this.selected + offset];
+            this.sources.splice(this.selected + offset, 1);
+            this.ActivePage(this.selected + offset)
+            log("Delete page: " + p.filename)
+        }
     },
     computed: {
         settings_lang: {
@@ -241,6 +244,11 @@ async function ProcInputFiles(files) {
                 if (entry.filename.endsWith(".jpg")) {
                     console.log(entry.filename);
                     const blob = await entry.getData(new zip.BlobWriter('image/jpeg'));
+                    vm.sources.push(await CreateSource(blob, f.name + "/" + entry.filename, "archive"));
+                }
+                if (entry.filename.endsWith(".png")) {
+                    console.log(entry.filename);
+                    const blob = await entry.getData(new zip.BlobWriter('image/png'));
                     vm.sources.push(await CreateSource(blob, f.name + "/" + entry.filename, "archive"));
                 }
             }
