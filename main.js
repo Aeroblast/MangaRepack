@@ -6,7 +6,7 @@ function GenarateId() { globleCounter++; return globleCounter; }
 const vueSettings = {
     data() {
         return {
-            ui: locale_en,
+            ui: GetUserLocale(),
             log: [],
             log_var: "",
             sources: [],
@@ -121,7 +121,12 @@ const vueSettings = {
             let p = this.sources[this.selected + offset];
             this.sources.splice(this.selected + offset, 1);
             this.ActivePage(this.selected + offset)
-            log("Delete page: " + p.filename)
+            if (p.from == "placeholder") {
+                log("Delete placeholder: " + p.filename)
+            } else {
+                log("Delete page: " + p.filename)
+            }
+
         }
     },
     computed: {
@@ -253,6 +258,9 @@ async function ProcInputFiles(files) {
                 }
             }
             await reader.close();
+        }
+        if (f.name.endsWith(".jpg") || f.name.endsWith(".png")) {
+            vm.sources.push(await CreateSource(f, f.name, "file"));
         }
     }
     if (vm.sources.length == 0) return;

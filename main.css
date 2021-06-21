@@ -101,14 +101,18 @@ body {
     padding: 0.2rem 0.3rem;
     border-style: solid;
     border-width: 1px;
+    white-space: nowrap;
+    overflow: hidden;
+    max-width: 98%;
+    display: inline-block;
 }
 
 .toc_label>span {
-    bottom: 4rem;
+    bottom: 5rem;
 }
 
 .landmark_label>span {
-    bottom: 6rem;
+    bottom: 7rem;
 }
 
 #editorZone {
@@ -123,7 +127,7 @@ body {
 
 #pageViewer {
     max-width: 95%;
-    max-height: 70vh;
+    max-height: 65vh;
 }
 
 .tab-pane {
@@ -226,7 +230,16 @@ body {
     overflow-y: scroll;
     direction: rtl;
     text-align: right;
-    float: left;
+    display: inline-block;
+}
+
+#previewNav>.pageListItem[data-display="none"] {
+    height: 1.5em;
+    overflow: hidden;
+}
+
+#previewNav>.pageListItem[data-display="none"]>img {
+    display: none;
 }
 
 #previewNav>.pageListItem:nth-child(1) {
@@ -235,6 +248,13 @@ body {
 
 #previewNav>.pageListItem:nth-child(1)>img {
     width: 50%;
+}
+
+#previewData {
+    display: inline-block;
+    height: 100%;
+    width: 70%;
+    vertical-align: top;
 }
 
 a[data-dropdown-item-disable="true"] {

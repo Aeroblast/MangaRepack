@@ -1,11 +1,13 @@
 const locale_all = {
     nav_settings: [
         "设置",
-        "Settings"
+        "Settings",
+        "設定"
     ],
     nav_content: [
         "编辑内容",
-        "Edit content"
+        "Edit content",
+        "編集"
     ],
     nav_metadata: [
         "编辑元数据",
@@ -17,11 +19,13 @@ const locale_all = {
     ],
     nav_about: [
         "关于",
-        "About"
+        "About",
+        "このアプリについて"
     ],
     menu_file: [
         "文件",
-        "File"
+        "File",
+        "フィール"
     ],
     menu_import: [
         "导入",
@@ -58,6 +62,10 @@ const locale_all = {
     editor_edit_this_page: [
         "编辑此页",
         "Edit this page"
+    ],
+    editor_delete_page: [
+        "删除此页",
+        "Delete this page"
     ],
     editor_guide: [
         "导航",
@@ -144,3 +152,11 @@ function GenarateLocale(i) {
 }
 const locale_zhCN = GenarateLocale(0);
 const locale_en = GenarateLocale(1);
+function GetUserLocale() {
+    switch (window.navigator.language) {
+        case "zh-CN":
+            return locale_zhCN;
+        default:
+            return locale_en;
+    }
+}
