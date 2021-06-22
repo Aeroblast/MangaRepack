@@ -137,6 +137,6 @@ function ToggleLog() {
     }
     setTimeout(() => { e.scrollTo(0, e.scrollHeight); }, 100);
 }
-function CheckInputValid(){
+function CheckInputValid() {
     return true;
 }
