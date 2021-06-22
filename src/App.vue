@@ -82,7 +82,7 @@
         <MetadataEditor ref="metadataEditor" :ui="ui"></MetadataEditor>
       </div>
       <div class="tab-pane container fade" id="preview">
-        <Preview :ui="ui" :sources="sources"></Preview>
+        <Preview :ui="ui" :sources="sources" @save="Save"></Preview>
       </div>
       <div class="tab-pane container fade" id="about">
         <h2>Manga Repack</h2>

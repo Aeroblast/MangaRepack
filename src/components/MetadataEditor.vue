@@ -70,6 +70,12 @@
         <a
           class="dropdown-item"
           href="#"
+          v-on:click="AddMetadataInput('metadata-input-description')"
+          >{{ ui.metadata_description }}</a
+        >
+        <a
+          class="dropdown-item"
+          href="#"
           v-on:click="AddMetadataInput('metadata-input-general')"
           >{{ ui.metadata_meta }}</a
         >
@@ -91,10 +97,22 @@
 
 <script>
 import MetadataInputCreator from "./MetadataInputs/Creator.vue";
+import MetadataInputDate from "./MetadataInputs/Date.vue";
+import MetadataInputPublisher from "./MetadataInputs/Publisher.vue";
+import MetadataInputSource from "./MetadataInputs/Source.vue";
+import MetadataInputGeneral from "./MetadataInputs/General.vue";
+import MetadataInputDescription from "./MetadataInputs/Description.vue";
 
 export default {
   name: "MetadataEditor",
-  components: { MetadataInputCreator },
+  components: {
+    MetadataInputCreator,
+    MetadataInputDate,
+    MetadataInputPublisher,
+    MetadataInputSource,
+    MetadataInputDescription,
+    MetadataInputGeneral,
+  },
   props: {
     ui: Object,
   },
@@ -113,7 +131,6 @@ export default {
       for (const item of this.inputs) {
         if (item.type == "metadata-input-date") return true;
       }
-      console.log("contains date false");
       return false;
     },
   },

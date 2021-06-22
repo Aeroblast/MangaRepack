@@ -107,6 +107,10 @@ const locale_all = {
         "出版者",
         "Publisher"
     ],
+    metadata_description:[
+        "描述",
+        "Description"
+    ],
     metadata_delete: [
         "删除此项",
         "Delete"

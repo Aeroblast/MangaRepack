@@ -20,7 +20,7 @@
   </div>
   <div id="previewData">
     <div class="input-group">
-      <button class="btn" type="button" data-v-on:click="Save">
+      <button class="btn" type="button" v-on:click="$emit('save')">
         {{ ui.menu_save }}
       </button>
     </div>
@@ -34,6 +34,7 @@ export default {
     ui: Object,
     sources: Array,
   },
+  emits: ["save"],
 };
 </script>
 
