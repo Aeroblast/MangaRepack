@@ -3,7 +3,13 @@
     <div class="input-group-prepend">
       <span class="input-group-text">{{ ui.metadata_publisher }}</span>
     </div>
-    <input type="text" class="form-control" v-model="t_value" />
+    <input
+      type="text"
+      class="form-control"
+      ref="input0"
+      @blur="Validate"
+      v-model="t_value"
+    />
     <div class="input-group-prepend">
       <label
         class="input-group-text"
@@ -18,7 +24,6 @@
         {{ ui.metadata_delete }}
       </button>
     </div>
-    <div class="metadata-output" :data-xml="xml"></div>
   </div>
 </template>
 
@@ -41,6 +46,14 @@ export default {
       console.log(this.xml);
       this.$emit("destory", this.id);
     },
+    Validate() {
+      if (this.t_value.trim() == "") {
+        this.$refs.input0.classList.add("is-invalid");
+        return false;
+      }
+      this.$refs.input0.classList.remove("is-invalid");
+      return true;
+    },
   },
   computed: {
     xml() {
@@ -53,19 +66,19 @@ export default {
         if (item.type == "metadata-input-publisher") id++;
       }
       id = "publisher" + id;
-      if (this.t_value != "")
+      if (this.t_value.trim() != "")
         r +=
           '    <dc:publisher id="' +
           id +
           '">' +
-          this.t_value +
+          this.t_value.trim() +
           "</dc:publisher>\n";
-      if (this.t_file_as != "")
+      if (this.t_file_as.trim() != "")
         r +=
           '    <meta property="file-as" refines="#' +
           id +
           '">' +
-          this.t_file_as +
+          this.t_file_as.trim() +
           "</meta>\n";
       return r;
     },

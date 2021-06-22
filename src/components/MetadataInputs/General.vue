@@ -6,17 +6,28 @@
     <div class="input-group-prepend">
       <span class="input-group-text">{{ ui.metadata_meta_property }}</span>
     </div>
-    <input type="text" class="form-control" v-model="t_property" />
+    <input
+      type="text"
+      class="form-control"
+      ref="input0"
+      @blur="Validate"
+      v-model="t_property"
+    />
     <div class="input-group-prepend">
       <label class="input-group-text">{{ ui.metadata_meta_value }}</label>
     </div>
-    <input type="text" class="form-control" v-model="t_value" />
+    <input
+      type="text"
+      class="form-control"
+      ref="input1"
+      @blur="Validate"
+      v-model="t_value"
+    />
     <div class="input-group-append">
       <button class="btn btn-outline-danger" type="button" v-on:click="Destory">
         {{ ui.metadata_delete }}
       </button>
     </div>
-    <div class="metadata-output" v-bind:data-xml="xml"></div>
   </div>
 </template>
 
@@ -38,15 +49,31 @@ export default {
       console.log(this.xml);
       this.$emit("destory", this.id);
     },
+    Validate() {
+      let r = true;
+      if (this.t_value.trim() == "") {
+        this.$refs.input1.classList.add("is-invalid");
+        r = false;
+      } else {
+        this.$refs.input1.classList.remove("is-invalid");
+      }
+      if (this.t_property.trim() == "") {
+        this.$refs.input0.classList.add("is-invalid");
+        r = false;
+      } else {
+        this.$refs.input0.classList.remove("is-invalid");
+      }
+      return r;
+    },
   },
   computed: {
     xml() {
-      if (this.t_property != "" && this.t_value != "") {
+      if (this.t_property.trim() != "" && this.t_value.trim() != "") {
         return (
           '    <meta property="' +
-          this.t_property +
+          this.t_property.trim() +
           '">' +
-          this.t_value +
+          this.t_value.trim() +
           "</meta>\n"
         );
       }

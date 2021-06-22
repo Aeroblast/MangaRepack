@@ -42,13 +42,13 @@
         <a
           class="dropdown-item"
           href="#"
-          v-on:click="AddMetadataInput('metadata-input-creator')"
+          v-on:click="AddInput('metadata-input-creator')"
           >{{ ui.metadata_creator }}</a
         >
         <a
           class="dropdown-item"
           href="#"
-          v-on:click="AddMetadataInput('metadata-input-date')"
+          v-on:click="AddInput('metadata-input-date')"
           data-toggle="tooltip"
           data-placement="right"
           :title="ui.metadata_onlyone"
@@ -58,38 +58,39 @@
         <a
           class="dropdown-item"
           href="#"
-          v-on:click="AddMetadataInput('metadata-input-publisher')"
+          v-on:click="AddInput('metadata-input-publisher')"
           >{{ ui.metadata_publisher }}</a
         >
         <a
           class="dropdown-item"
           href="#"
-          v-on:click="AddMetadataInput('metadata-input-source')"
+          v-on:click="AddInput('metadata-input-source')"
           >{{ ui.metadata_source }}</a
         >
         <a
           class="dropdown-item"
           href="#"
-          v-on:click="AddMetadataInput('metadata-input-description')"
+          v-on:click="AddInput('metadata-input-description')"
           >{{ ui.metadata_description }}</a
         >
         <a
           class="dropdown-item"
           href="#"
-          v-on:click="AddMetadataInput('metadata-input-general')"
+          v-on:click="AddInput('metadata-input-general')"
           >{{ ui.metadata_meta }}</a
         >
       </div>
     </div>
     <div id="metadata_editor_optional">
       <component
+        :ref="setInputComponent"
         v-for="input in inputs"
         v-bind:is="input.type"
         :ui="ui"
         :id="input.id"
         :key="input.id"
         :inputs="inputs"
-        @destory="DestoryMetadataInput($event)"
+        @destory="DestoryInput($event)"
       ></component>
     </div>
   </form>
@@ -123,6 +124,7 @@ export default {
       title_file_as: "",
       language: "ja",
       inputs: [],
+      inputComponents: [],
     };
   },
   mounted() {},
@@ -134,8 +136,19 @@ export default {
       return false;
     },
   },
+  beforeUpdate() {
+    this.inputComponents = [];
+  },
+  updated() {
+    //console.log(this.itemRefs)
+  },
   methods: {
-    AddMetadataInput(type) {
+    setInputComponent(el) {
+      if (el) {
+        this.inputComponents.push(el);
+      }
+    },
+    AddInput(type) {
       if (type == "metadata-input-date") {
         if (this.metadataContainsDate) {
           return;
@@ -145,7 +158,7 @@ export default {
       this.inputs.push({ id: GenarateId(), type: type });
       console.log(this.inputs);
     },
-    DestoryMetadataInput(id) {
+    DestoryInput(id) {
       let i = 0;
       for (const item of this.inputs) {
         if (id == item.id) {
@@ -157,7 +170,7 @@ export default {
         this.inputs.splice(i, 1);
       }
     },
-    GetMetadataXml() {
+    GetXml() {
       let optional = document.getElementById("metadata_editor_optional");
       let r = '    <dc:title id="title">' + this.title + "</dc:title>\n";
       if (this.title_file_as != "")
@@ -166,8 +179,15 @@ export default {
           this.title_file_as +
           "</meta>\n";
       r += "    <dc:language>" + this.language + "</dc:language>\n";
-      for (const output of optional.getElementsByClassName("metadata-output")) {
-        r += output.getAttribute("data-xml");
+      for (const com of this.inputComponents) {
+        r += com.xml;
+      }
+      return r;
+    },
+    ValidateAll() {
+      let r = true;
+      for (const com of this.inputComponents) {
+        r = r && com.Validate();
       }
       return r;
     },

@@ -9,7 +9,6 @@
         {{ ui.metadata_delete }}
       </button>
     </div>
-    <div class="metadata-output" v-bind:data-xml="xml"></div>
   </div>
 </template>
 
@@ -22,13 +21,16 @@ export default {
   },
   data() {
     return {
-      t_value: new Date().toISOString(),
+      t_value: new Date().toISOString().substring(0, 10),
     };
   },
   methods: {
     Destory() {
       console.log(this.xml);
       this.$emit("destory", this.id);
+    },
+    Validate() {
+      return true;
     },
   },
   computed: {

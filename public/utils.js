@@ -58,3 +58,15 @@ function shortenStringFromEnd(str, l = 8) {
     if (str.length <= l) return str;
     else return "…" + str.substring(str.length - l)
 }
+
+function getValidFilename(str) {
+    return str
+        .replaceAll("/", "／")
+        .replaceAll("\\\\", "＼")
+        .replaceAll("<", "＜")
+        .replaceAll(">", "＞")
+        .replaceAll("\\?", "？")
+        .replaceAll(":", "：")
+        .replaceAll("\\|", "｜")
+        .replaceAll("\\*", "＊");
+}

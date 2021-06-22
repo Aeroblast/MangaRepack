@@ -152,8 +152,8 @@ export default {
         log("No content!", "danger");
         return;
       }
-      if (!CheckInputValid()) {
-        document.querySelector("#nav_metadata_editor");
+      if (!this.$refs.metadataEditor.ValidateAll()) {
+        document.querySelector("#nav_metadata_editor").click();
         log("metadata not complete!", "danger");
         return;
       }
@@ -197,7 +197,7 @@ async function ProcInputFiles(files) {
   for (const src of vm.sources) {
     common = StringCommonStart(common, src.filename);
   }
-  vm.sources[0].toc = "Cover";
+  vm.sources[0].toc = MapLandmark("cover", vm.$refs.metadataEditor.language);
   vm.sources[0].landmark = "cover";
   vm.source_commonPath = common;
   if (vm.$refs.metadataEditor.title == "")
