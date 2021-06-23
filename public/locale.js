@@ -55,9 +55,13 @@ const locale_all = {
         "只使用文件名",
         "Use filename only"
     ],
-    editor_add_placeholder: [
-        "在此增加空白页",
-        "Add placeholder"
+    editor_insert: [
+        "插入",
+        "Insert here"
+    ],
+    editor_placeholder: [
+        "空白页",
+        "Placeholder"
     ],
     editor_edit_this_page: [
         "编辑此页",
@@ -107,7 +111,7 @@ const locale_all = {
         "出版者",
         "Publisher"
     ],
-    metadata_description:[
+    metadata_description: [
         "描述",
         "Description"
     ],

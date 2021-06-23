@@ -37,9 +37,15 @@
     </div>
     <ul class="nav nav-tabs" id="pageEditor" :data-sp="pageEditorSp">
       <li class="nav-item">
-        <a class="nav-link" href="#" v-on:click="AddPlaceholder(0)">{{
-          ui.editor_add_placeholder
-        }}</a>
+        <a class="nav-link dropdown-toggle" data-toggle="dropdown" href="#">
+          <ruby>{{ ui.editor_insert }}<rt>^</rt></ruby>
+        </a>
+        <div class="dropdown-menu">
+          <a class="dropdown-item" href="#" v-on:click="AddPlaceholder(0)">{{
+            ui.editor_placeholder
+          }}</a>
+          <a class="dropdown-item" href="#">暂存</a>
+        </div>
       </li>
       <li class="nav-item">
         <a
@@ -47,13 +53,20 @@
           data-toggle="tab"
           href="#tocEntryRight"
           id="nav_tocEntryRight"
+          @click="selectOffset = 0"
           >{{ ui.editor_edit_this_page }}</a
         >
       </li>
       <li class="nav-item">
-        <a class="nav-link" href="#" v-on:click="AddPlaceholder(1)">{{
-          ui.editor_add_placeholder
-        }}</a>
+        <a class="nav-link dropdown-toggle" data-toggle="dropdown" href="#">
+          <ruby>{{ ui.editor_insert }}<rt>^</rt></ruby>
+        </a>
+        <div class="dropdown-menu">
+          <a class="dropdown-item" href="#" v-on:click="AddPlaceholder(1)">{{
+            ui.editor_placeholder
+          }}</a>
+          <a class="dropdown-item" href="#">暂存</a>
+        </div>
       </li>
       <li class="nav-item">
         <a
@@ -61,96 +74,51 @@
           data-toggle="tab"
           href="#tocEntryLeft"
           id="nav_tocEntryLeft"
+          @click="selectOffset = 1"
           >{{ ui.editor_edit_this_page }}</a
         >
       </li>
     </ul>
+    <!-------上面是菜单--------->
     <div class="tab-content">
       <div class="tab-pane container" id="tocEntryLeft">
-        <label>{{ navEditorL_filename }}</label>
-        <div class="input-group mb-3 w-50">
-          <div class="input-group-prepend">
-            <label class="input-group-text alert-primary">{{
-              ui.editor_guide
-            }}</label>
-          </div>
-          <select
-            class="custom-select"
-            v-model="navEditorL_landmark"
-            onblur="logValueChangeEnd()"
-          >
-            <option value="none">- - -</option>
-            <option value="cover">表紙</option>
-            <option value="toc">目次</option>
-            <option value="bodymatter">本編</option>
-            <option value="colophon">奥付</option>
-          </select>
-        </div>
-        <div class="input-group mb-3 w-50">
-          <div class="input-group-prepend">
-            <span class="input-group-text alert-success">{{
-              ui.editor_toc_entry
-            }}</span>
-          </div>
-          <input
-            type="text"
-            class="form-control"
-            placeholder="- - -"
-            v-model="navEditorL_toc"
-            onblur="logValueChangeEnd()"
-          />
-        </div>
-        <div class="input-group mb-3">
-          <button
-            class="btn btn-outline-danger"
-            type="button"
-            v-on:click="DeletePage(1)"
-          >
-            {{ ui.editor_delete_page }}
+        <PageEditorMenu
+          ref="pageEditorL"
+          :ui="ui"
+          :offset="1"
+          :source="selectedSourceL"
+          @delete="DeletePage($event)"
+        ></PageEditorMenu>
+      </div>
+      <!-------左右分割线--------->
+      <div class="tab-pane container" id="tocEntryRight">
+        <PageEditorMenu
+          ref="pageEditorR"
+          :ui="ui"
+          :offset="0"
+          :source="selectedSourceR"
+          @delete="DeletePage($event)"
+        ></PageEditorMenu>
+      </div>
+    </div>
+  </div>
+  <div class="modal" id="SVGEditor">
+    <div>
+      <div class="modal-content">
+        <div class="modal-header">
+          <h4 class="modal-title">SVG Editor</h4>
+          <button type="button" class="close" data-dismiss="modal">
+            &times;
           </button>
         </div>
-      </div>
-      <div class="tab-pane container" id="tocEntryRight">
-        <label>{{ navEditorR_filename }}</label>
-        <div class="input-group mb-3 w-50">
-          <div class="input-group-prepend">
-            <label class="input-group-text alert-primary">{{
-              ui.editor_guide
-            }}</label>
-          </div>
-          <select
-            class="custom-select"
-            v-model="navEditorR_landmark"
-            onblur="logValueChangeEnd()"
-          >
-            <option value="none">- - -</option>
-            <option value="cover">表紙</option>
-            <option value="toc">目次</option>
-            <option value="bodymatter">本編</option>
-            <option value="colophon">奥付</option>
-          </select>
+
+        <div class="modal-body">
+          <SVGLinkEditor :ui="ui" :source="selectedSource"></SVGLinkEditor>
         </div>
-        <div class="input-group mb-3 w-50">
-          <div class="input-group-prepend">
-            <span class="input-group-text alert-success">{{
-              ui.editor_toc_entry
-            }}</span>
-          </div>
-          <input
-            type="text"
-            class="form-control"
-            placeholder="- - -"
-            v-model="navEditorR_toc"
-            onblur="logValueChangeEnd()"
-          />
-        </div>
-        <div class="input-group mb-3">
-          <button
-            class="btn btn-outline-danger"
-            type="button"
-            v-on:click="DeletePage(0)"
-          >
-            {{ ui.editor_delete_page }}
+
+        <div class="modal-footer">
+          <button type="button" class="btn btn-danger" data-dismiss="modal">
+            Close
           </button>
         </div>
       </div>
@@ -159,15 +127,25 @@
 </template>
 
 <script>
+import SVGLinkEditor from "./ContentEditor/SVGLinkEditor.vue";
+import PageEditorMenu from "./ContentEditor/PageEditorMenu.vue";
 export default {
   name: "ContentEditor",
   props: {
     ui: Object,
     sources: Array,
   },
+  components: {
+    SVGLinkEditor,
+    PageEditorMenu,
+  },
   emits: [],
   data() {
-    return { selected: -1, pageEditorSp: "" };
+    return {
+      selected: -1,
+      pageEditorSp: "",
+      selectOffset: 0,
+    };
   },
   mounted() {
     Split(["#pageListWarpper", "#editorZone"], {
@@ -178,73 +156,20 @@ export default {
     pv.height = (pv.width / 2) * ratio;
   },
   computed: {
-    navEditorR_filename() {
+    selectedSourceR() {
       if (this.selected < 0) return undefined;
-      return this.sources[this.selected].filename;
+      return this.sources[this.selected];
     },
-    navEditorR_landmark: {
-      //first
-      get() {
-        if (this.selected < 0) return undefined;
-        let r = this.sources[this.selected].landmark;
-        if (r) return r;
-        else return "none";
-      },
-      set(newValue) {
-        if (this.selected < 0) return;
-        let src = this.sources[this.selected];
-        logValueChange("landmark of ", src, src.landmark, newValue);
-        if (newValue == "none") newValue = "";
-        src.landmark = newValue;
-      },
-    },
-    navEditorR_toc: {
-      get() {
-        if (this.selected < 0) return undefined;
-        let r = this.sources[this.selected].toc;
-        if (r) return r;
-        else return "";
-      },
-      set(newValue) {
-        if (this.selected < 0) return;
-        let src = this.sources[this.selected];
-        logValueChange("toc of ", src, src.toc, newValue);
-        src.toc = newValue;
-      },
-    },
-    navEditorL_filename() {
+    selectedSourceL() {
       if (this.selected + 1 >= this.sources.length) return undefined;
-      return this.sources[this.selected + 1].filename;
+      return this.sources[this.selected + 1];
     },
-    navEditorL_landmark: {
-      get() {
-        if (this.selected + 1 >= this.sources.length) return undefined;
-        let r = this.sources[this.selected + 1].landmark;
-        if (r) return r;
-        else return "none";
-      },
-      set(newValue) {
-        if (this.selected + 1 >= this.sources.length) return;
-        let src = this.sources[this.selected + 1];
-        logValueChange("landmark of ", src, src.landmark, newValue);
-        if (newValue == "none") newValue = "";
-        src.landmark = newValue;
-      },
-    },
-    navEditorL_toc: {
-      //first
-      get() {
-        if (this.selected + 1 >= this.sources.length) return undefined;
-        let r = this.sources[this.selected + 1].toc;
-        if (r) return r;
-        else return "";
-      },
-      set(newValue) {
-        if (this.selected + 1 >= this.sources.length) return;
-        let src = this.sources[this.selected + 1];
-        logValueChange("toc of ", src, src.toc, newValue);
-        src.toc = newValue;
-      },
+    selectedSource() {
+      if (this.selectOffset == 0) {
+        return this.selectedSourceR;
+      } else {
+        return this.selectedSourceL;
+      }
     },
   },
   methods: {
@@ -329,7 +254,6 @@ export default {
   },
 };
 </script>
-
 
 <style src="./ContentEditor.css">
 </style>

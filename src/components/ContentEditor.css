@@ -118,3 +118,7 @@
 #pageEditor[data-sp="single"]>li:nth-child(4), #pageEditor[data-sp="cover"]>li:nth-child(4) {
     display: none;
 }
+
+#SVGEditor>div{
+    margin: 1em;
+}
