@@ -331,5 +331,5 @@ export default {
 </script>
 
 
-<style scoped>
+<style src="./ContentEditor.css">
 </style>

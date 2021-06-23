@@ -209,4 +209,33 @@ async function ProcInputFiles(files) {
 </script>
 
 <style>
+#log {
+  right: 0;
+  top: 0;
+  width: 40%;
+  height: 2.5em;
+  overflow-x: hidden;
+  overflow-y: scroll;
+  margin-left: auto;
+  margin-right: 0.5em;
+  scroll-behavior: smooth;
+}
+
+#log[data-enlarge] {
+  height: 10em;
+  position: absolute;
+}
+
+#log::-webkit-scrollbar {
+  display: none;
+}
+
+#log > p {
+  line-height: 1.3em;
+  font-size: 1em;
+  margin: 0;
+  padding: 0.5em 0.5em;
+  white-space: nowrap;
+  overflow: hidden;
+}
 </style>

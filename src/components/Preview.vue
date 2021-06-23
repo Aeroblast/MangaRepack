@@ -40,4 +40,36 @@ export default {
 
 
 <style scoped>
+#previewNav {
+  width: 20%;
+  height: 100%;
+  overflow-y: scroll;
+  direction: rtl;
+  text-align: right;
+  display: inline-block;
+}
+
+#previewNav > .pageListItem[data-display="none"] {
+  height: 1.5em;
+  overflow: hidden;
+}
+
+#previewNav > .pageListItem[data-display="none"] > img {
+  display: none;
+}
+
+#previewNav > .pageListItem:nth-child(1) {
+  width: 100%;
+}
+
+#previewNav > .pageListItem:nth-child(1) > img {
+  width: 50%;
+}
+
+#previewData {
+  display: inline-block;
+  height: 100%;
+  width: 70%;
+  vertical-align: top;
+}
 </style>

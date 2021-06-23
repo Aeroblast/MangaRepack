@@ -1,0 +1,120 @@
+#pageListWarpper {
+    width: 40%;
+    height: 100%;
+    overflow-y: scroll;
+    direction: rtl;
+    text-align: right;
+    float: left;
+}
+
+#pageListWarpper>.pageListItem:nth-child(1) {
+    width: 100%;
+}
+
+#pageListWarpper>.pageListItem:nth-child(1)>img {
+    width: 50%;
+}
+
+#editorZone {
+    height: 100%;
+    margin: 0;
+}
+
+#pageViewerWarpper {
+    width: 99.5%;
+    text-align: center;
+}
+
+#pageViewer {
+    max-width: 95%;
+    max-height: 65vh;
+}
+
+#content_editor {
+    margin: 0;
+    padding: 2vh 0 0 0;
+    width: 100%;
+    max-width: 100%;
+    flex-direction: row;
+}
+
+#content_editor.active {
+    display: flex;
+}
+
+.gutter {
+    background-color: #eee;
+    background-repeat: no-repeat;
+    background-position: 50%;
+}
+
+.gutter.gutter-horizontal {
+    background-image: url("data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAUAAAAeCAYAAADkftS9AAAAIklEQVQoU2M4c+bMfxAGAgYYmwGrIIiDjrELjpo5aiZeMwF+yNnOs5KSvgAAAABJRU5ErkJggg==");
+    cursor: col-resize;
+}
+
+#pageEditor {
+    direction: rtl;
+}
+
+#pageEditor>li {
+    direction: ltr;
+    position: relative;
+    top: 1px;
+    margin: 0;
+    width: 15%;
+    text-align: center;
+}
+
+/*placeholder toc placeholder toc*/
+
+#pageEditor> :nth-child(1) {
+    right: -5%;
+}
+
+#pageEditor>li:nth-child(2) {
+    right: 2.5%;
+}
+
+#pageEditor>li:nth-child(3) {
+    right: 12.5%;
+}
+
+#pageEditor>li:nth-child(4) {
+    right: 22.5%;
+}
+
+:root {
+    --pageEditor-active-color: rgb(238, 238, 238);
+}
+
+#pageEditor>li:nth-child(2)>a.active, #pageEditor>li:nth-child(4)>a.active {
+    background-color: var(--pageEditor-active-color);
+    border-bottom-color: var(--pageEditor-active-color);
+}
+
+#tocEntryRight, #tocEntryLeft {
+    background-image: linear-gradient( var(--pageEditor-active-color), white, white);
+}
+
+#tocEntryRight, #tocEntryLeft {
+    margin: 0;
+    width: auto;
+    height: fit-content;
+}
+
+#pageEditor[data-sp="cover"]> :nth-child(1) {
+    display: none;
+}
+
+#pageEditor[data-sp="cover"]>li:nth-child(2) {
+    right: 42.5%;
+}
+
+#pageEditor[data-sp="single"]>li:nth-child(3), #pageEditor[data-sp="cover"]>li:nth-child(3) {
+    display: none;
+}
+
+#pageEditor[data-sp="single"]>li:nth-child(4), #pageEditor[data-sp="cover"]>li:nth-child(4) {
+    display: none;
+}

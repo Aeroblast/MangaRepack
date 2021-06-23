@@ -3,9 +3,6 @@ var globleCounter = 0;
 var vm;
 function GenarateId() { globleCounter++; return globleCounter; }
 
-
-
-
 async function CreateSource(blob, name, from) {
     let obj = new Object();
     obj.image = await createImageBitmap(blob);
