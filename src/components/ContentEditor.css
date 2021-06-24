@@ -119,6 +119,11 @@
     display: none;
 }
 
-#SVGEditor>div{
-    margin: 1em;
+#SVGEditor>div {
+    padding: 1em;
+    height: 100vh;
+}
+
+#SVGEditor>div>.modal-content {
+    height: 100%;
 }
