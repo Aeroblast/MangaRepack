@@ -14,11 +14,16 @@ async function CreateSource(blob, name, from) {
 }
 var placeholderImage, placeholderThumbURL;
 (async () => {
-    let s = new OffscreenCanvas(80, 80 * ratio);
+    //let s = new OffscreenCanvas(80, 80 * ratio);
+    let s = document.createElement("canvas")
+    s.width = 80;
+    s.height = 80 * ratio;
     let c = s.getContext("2d");
     c.font = "10px Arial";
     c.fillText("Placeholder", 3, 40);
-    let b = await s.convertToBlob();
+    let b;
+    //b = await s.convertToBlob();//OffScreen
+    b = await new Promise(resolve => s.toBlob(resolve));
     placeholderThumbURL = URL.createObjectURL(b);
     placeholderImage = s;
 })();
@@ -37,11 +42,16 @@ function CreateSourcePlaceholder(after_source) {
 }
 async function CreateThumbURL(image) {
     const ow = 140, oh = ow * ratio;
-    let s = new OffscreenCanvas(ow, oh);
+    //let s = new OffscreenCanvas(ow, oh);
+    let s = document.createElement("canvas")
+    s.width = ow;
+    s.height = oh;
     let fit = FitImage(image, ow, oh);
     let c = s.getContext('2d');
     c.drawImage(image, fit[0], fit[1], fit[2], fit[3]);
-    let b = await s.convertToBlob();
+    let b;
+    // b= await s.convertToBlob();//OffScreen canvas
+    b = await new Promise(resolve => s.toBlob(resolve));
     return URL.createObjectURL(b);
 }
 
