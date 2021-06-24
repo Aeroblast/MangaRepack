@@ -32,6 +32,7 @@ const xhtml_placeholder =
     + "<body style=\"margin:0;padding:0;\">\n  <div>\n"
     + "    <svg style=\"margin:0;padding:0;\" xmlns=\"http://www.w3.org/2000/svg\" version=\"1.1\" xmlns:xlink=\"http://www.w3.org/1999/xlink\" width=\"100%\" height=\"100%\" viewBox=\"0 0 1000 1414\">\n"
     + "    </svg>\n  </div>\n</body>\n</html>";
+
 async function SaveEpub() {
     log("Generating EPUB... ")
     let sources = vm.sources;
@@ -39,21 +40,24 @@ async function SaveEpub() {
     const blobWriter = new zip.BlobWriter("application/zip");
     const writer = new zip.ZipWriter(blobWriter);
 
+    const package = CreatePackage(sources);
+    const title = vm.$refs.metadataEditor.title.trim();
+
     await writer.add("mimetype", new zip.TextReader("application/epub+zip"), { level: 0, extendedTimestamp: false });
     await writer.add("META-INF/container.xml", new zip.TextReader(container));
-    await writer.add("OEBPS/manga.opf", new zip.TextReader(CreatePackage(sources)));
-    await writer.add("OEBPS/nav.xhtml", new zip.TextReader(CreateNav(sources)));
+    await writer.add("OEBPS/manga.opf", new zip.TextReader(package));
+    await writer.add("OEBPS/nav.xhtml", new zip.TextReader(CreateNav(sources, title)));
 
 
     for (const source of sources) {
-        await writer.add("OEBPS/Text/" + source.id + ".xhtml", new zip.TextReader(CreateXhtml(source, vm.metadata_title)));
+        await writer.add("OEBPS/Text/" + source.id + ".xhtml", new zip.TextReader(CreateXhtml(source, title)));
         if (source.from == "placeholder") continue;
         await writer.add("OEBPS/Images/" + source.mappedFilename, new zip.BlobReader(source.blob), { level: 0 });
 
     }
 
     await writer.close();
-    let epubname = "test.epub";
+    let epubname = getValidFilename(title) + ".epub";
     const blob = await blobWriter.getData();
     log("Dowmload EPUB:" + epubname)
     const u = URL.createObjectURL(blob);
@@ -61,8 +65,8 @@ async function SaveEpub() {
     a.href = u;
     a.download = epubname;
     a.click();
-
 }
+
 function MapSourceName() {
     for (const src of vm.sources) {
         src.mappedFilename = MapEpubFilename(src.filename);
@@ -75,7 +79,7 @@ function CreatePackage(sources) {
     let itemrefs = "";
     let items = "";
     let items2 = "";
-    let metadata = vm.$refs.metadataEditor.GetMetadataXml();
+    let metadata = vm.$refs.metadataEditor.GetXml();
     metadata += "    <dc:identifier id=\"uuid\">" + uuidv4() + "</dc:identifier>\n";
     metadata += "    <meta property=\"dcterms:modified\">" + (new Date().toISOString().substr(0, 19) + 'Z') + "</meta>\n";
     let counter = 0;
@@ -97,7 +101,8 @@ function CreatePackage(sources) {
     }
     return package_template.replace("{2}", itemrefs).replace("{1}", items + items2).replace("{0}", metadata);
 }
-function CreateNav(sources) {
+
+function CreateNav(sources, title) {
     let toc = "";
     let landmark = "";
     for (const src of sources) {
@@ -108,9 +113,10 @@ function CreateNav(sources) {
             toc += "        <li><a href=\"Text/" + src.id + ".xhtml\">" + src.toc + "</a></li>\n";
         }
     }
-    return nav_template.replace("{1}", landmark).replace("{0}", toc).replace("{title}", vm.metadata_title);
+    return nav_template.replace("{1}", landmark).replace("{0}", toc).replace("{title}", title);
 
 }
+
 function MapLandmark(s, lang) {
     const mapLang = new Map([["ja", 0], ["zh-CN", 1], ["zh-TW", 2]]);
     const mapS = new Map([["cover", 0], ["toc", 1], ["bodymatter", 2], ["colophon", 3]]);
@@ -121,6 +127,7 @@ function MapLandmark(s, lang) {
     return str[mapLang.get(lang)][mapS.get(s)]
 
 }
+
 function CreateXhtml(source, title) {
     if (source.from == "placeholder") {
         return xhtml_placeholder.replace("{title}", title)
