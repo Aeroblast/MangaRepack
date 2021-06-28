@@ -39,7 +39,11 @@
       data-toggle="modal"
       data-target="#SVGEditor"
     >
-      图形目录
+      {{
+        source && source.SVGLinks && source.SVGLinks.length > 0
+          ? "编辑图形目录"
+          : "添加图形目录"
+      }}
     </button>
     <button
       class="btn btn-outline-danger"

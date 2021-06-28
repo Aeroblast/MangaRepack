@@ -20,12 +20,13 @@
         :key="link.id"
         :id="link.id"
         :linkInfoRef="link"
+        :activeId="currentMenu ? currentMenu.id : -1"
         @edit="StartEdit($event)"
-        @init="InitEditable($event)"
       ></component>
     </svg>
   </div>
   <div id="svg_editor">
+    <div>提示：先标记目录入口。</div>
     <label>源文件：{{ source ? source.filename : "" }}</label>
     <div class="input-grpup">
       <button class="btn dropdown-toggle" data-toggle="dropdown" href="#">
@@ -37,18 +38,39 @@
           >Rect Group</a
         >
       </div>
+      &nbsp;
+      <button
+        class="btn btn-outline-danger"
+        type="button"
+        v-if="this.currentMenu"
+        v-on:click="RemoveCurrent"
+      >
+        删除选中项
+      </button>
     </div>
+
+    <component
+      v-for="link in links"
+      v-bind:is="'Editable' + link.type + 'Menu'"
+      :key="link.id"
+      :id="link.id"
+      :linkInfoRef="link"
+      :activeId="currentMenu ? currentMenu.id : -1"
+      :availableEntries="availableEntries"
+    ></component>
   </div>
 </template>
 
 <script>
 import EditableRect from "./SVGEditableRect.vue";
+import EditableRectMenu from "./SVGEditableRectMenu.vue";
 export default {
   name: "SVGLinkEditor",
-  components: { EditableRect },
+  components: { EditableRect, EditableRectMenu },
   data() {
     return {
-      current: null, //current Editable
+      currentMouseEdit: null, //current Editable
+      currentMenu: null,
       lastMouseX: 0,
       lastMouseY: 0,
       rate: 1,
@@ -58,9 +80,14 @@ export default {
   props: {
     ui: Object,
     source: Object,
+    availableEntries: Array,
   },
   computed: {
     links() {
+      //SVGLink
+      //SVGLink.id
+      //SVGLink.args
+      //Rect target width height x y
       if (!this.source) return [];
       if (!this.source.SVGLinks) {
         this.source.SVGLinks = [];
@@ -84,16 +111,10 @@ export default {
     },
   },
   methods: {
-    InitEditable(inst) {
-      if (inst.type == "Rect" && inst.linkInfoRef.needInit) {
-        inst.width = this.width / 2;
-        inst.height = this.height / 16;
-        inst.linkInfoRef.needInit = false;
-      }
-    },
     StartEdit(obj) {
-      this.current = obj.target;
-      this.current.editState = "on";
+      this.currentMenu = obj.target;
+      this.currentMouseEdit = obj.target;
+      this.currentMouseEdit.editState = "on";
       this.svgRect = this.$refs.svg.getBoundingClientRect();
 
       let displayWidth = this.svgRect.right - this.svgRect.left;
@@ -104,22 +125,22 @@ export default {
       this.lastMouseY = e.clientY - this.svgRect.top;
     },
     MouseMove(e) {
-      if (!this.current) return;
+      if (!this.currentMouseEdit) return;
       let mouseX = e.clientX - this.svgRect.left;
       let mouseY = e.clientY - this.svgRect.top;
       let deltaX = (mouseX - this.lastMouseX) * this.rate;
       let deltaY = (mouseY - this.lastMouseY) * this.rate;
-      switch (this.current.editType) {
+      switch (this.currentMouseEdit.editType) {
         case "drag":
           {
-            this.current.x += deltaX;
-            this.current.y += deltaY;
+            this.currentMouseEdit.linkInfoRef.args.x += deltaX;
+            this.currentMouseEdit.linkInfoRef.args.y += deltaY;
           }
           break;
         case "scale":
           {
-            this.current.width += deltaX;
-            this.current.height += deltaY;
+            this.currentMouseEdit.linkInfoRef.args.width += deltaX;
+            this.currentMouseEdit.linkInfoRef.args.height += deltaY;
           }
           break;
       }
@@ -127,20 +148,56 @@ export default {
       this.lastMouseY = mouseY;
     },
     MouseUp(e) {
-      if (this.current) {
-        this.current.editState = "";
-        this.current.UpdateArgs();
-        console.log(this.source);
-        this.current = null;
+      if (this.currentMouseEdit) {
+        this.currentMouseEdit.linkInfoRef.args.x = parseInt(
+          this.currentMouseEdit.linkInfoRef.args.x
+        );
+        this.currentMouseEdit.linkInfoRef.args.y = parseInt(
+          this.currentMouseEdit.linkInfoRef.args.y
+        );
+        this.currentMouseEdit.linkInfoRef.args.width = parseInt(
+          this.currentMouseEdit.linkInfoRef.args.width
+        );
+        this.currentMouseEdit.linkInfoRef.args.height = parseInt(
+          this.currentMouseEdit.linkInfoRef.args.height
+        );
+        this.currentMouseEdit.editState = "";
+        this.currentMouseEdit.UpdateArgs();
+        this.currentMouseEdit = null;
       }
     },
     AddLink(type) {
-      this.links.push({ type: type, id: GenarateId(), needInit: true });
+      let args;
+      switch (type) {
+        case "Rect":
+          args = {
+            x: 0,
+            y: 0,
+            width: this.width / 2,
+            height: this.height / 8,
+          };
+          break;
+      }
+      this.links.push({
+        type: type,
+        id: GenarateId(),
+        needInit: true,
+        args: args,
+      });
+    },
+    RemoveCurrent() {
+      for (const i in this.links) {
+        if (this.links[i].id == this.currentMenu.id) {
+          this.links.splice(i, 1);
+          this.currentMenu = null;
+          return;
+        }
+      }
     },
   },
 };
 </script>
-<style scoped>
+<style>
 #svg_display {
   display: inline-block;
   height: 75vh;
@@ -151,7 +208,16 @@ svg {
   max-width: 100%;
 }
 rect:hover {
-  fill: #ff8800;
+  fill: #ff8800 !important;
+}
+rect[data-active="true"] {
+  fill: rgb(0, 195, 195);
+}
+.svg_element_menu {
+  display: none;
+}
+.svg_element_menu[data-active="true"] {
+  display: block;
 }
 #svg_editor {
   display: inline-block;

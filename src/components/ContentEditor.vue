@@ -29,6 +29,12 @@
       <div class="toc_label" :data-display="s.toc ? 'true' : ''">
         <span class="alert-success" :title="s.toc">{{ s.toc }}</span>
       </div>
+      <div
+        class="svglinks_label"
+        :data-display="s.SVGLinks && s.SVGLinks.length > 0 ? 'true' : ''"
+      >
+        <span class="alert-secondary">has SVG links</span>
+      </div>
     </div>
   </div>
   <div id="editorZone">
@@ -113,14 +119,15 @@
         </div>
 
         <div class="modal-body">
-          <SVGLinkEditor :ui="ui" :source="selectedSource"></SVGLinkEditor>
+          <SVGLinkEditor
+            :ui="ui"
+            :source="selectedSource"
+            :availableEntries="availableEntries"
+          ></SVGLinkEditor>
         </div>
 
         <div class="modal-footer">
           <button type="button" class="btn btn-primary" data-dismiss="modal">
-            Save
-          </button>
-          <button type="button" class="btn btn-danger" data-dismiss="modal">
             Close
           </button>
         </div>
@@ -173,6 +180,13 @@ export default {
       } else {
         return this.selectedSourceL;
       }
+    },
+    availableEntries() {
+      return this.sources.filter((src) => {
+        if (src.toc) {
+          return true;
+        }
+      });
     },
   },
   methods: {

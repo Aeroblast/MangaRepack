@@ -199,9 +199,12 @@ async function ProcInputFiles(files) {
   }
   vm.sources[0].toc = MapLandmark("cover", vm.$refs.metadataEditor.language);
   vm.sources[0].landmark = "cover";
+
   vm.source_commonPath = common;
   if (vm.$refs.metadataEditor.title == "")
-    vm.$refs.metadataEditor.title = common.replaceAll("/", " ");
+    vm.$refs.metadataEditor.title = common
+      .replaceAll("/", " ")
+      .replace(".zip", "");
   vm.sources.sort(sortSourceByFullPath);
   logValueChange("input count", null, 0, vm.sources.length + "");
   logValueChangeEnd();

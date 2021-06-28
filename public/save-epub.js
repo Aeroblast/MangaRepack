@@ -23,7 +23,7 @@ const xhtml_template =
     + "  <head>\n    <meta charset=\"UTF-8\"/>\n    <title>{title}</title>\n    <meta name=\"viewport\" content=\"width={w}, height={h}\" />\n  </head>"
     + "  <body style=\"margin:0;padding:0;\">\n    <div>\n"
     + "      <svg style=\"margin:0;padding:0;\" xmlns=\"http://www.w3.org/2000/svg\" version=\"1.1\" xmlns:xlink=\"http://www.w3.org/1999/xlink\" width=\"100%\" height=\"100%\" viewBox=\"0 0 {w} {h}\">\n"
-    + "        <image width=\"{w}\" height=\"{h}\" xlink:href=\"{href}\"/>\n"
+    + "        <image width=\"{w}\" height=\"{h}\" xlink:href=\"{href}\"/>\n{links}"
     + "      </svg>\n    </div>\n  </body>\n</html>";
 const xhtml_placeholder =
     "<?xml version=\"1.0\" encoding=\"UTF-8\"?>"
@@ -128,14 +128,33 @@ function MapLandmark(s, lang) {
 
 }
 
+function CreateSVGLink(target, rect) {
+    let r = "<a xlink:href=\"" + target.id + ".xhtml" + "\" target=\"_top\">"
+        + "<rect fill-opacity=\"0.0\" x=\"" + rect.x + "\" y=\"" + rect.y + "\" width=\"" + rect.width + "\" height=\"" + rect.height + "\">"
+        + "<title>" + target.toc + "</title></rect></a>";
+    return r;
+
+}
+
 function CreateXhtml(source, title) {
     if (source.from == "placeholder") {
         return xhtml_placeholder.replace("{title}", title)
+    }
+    let links = "";
+    if (source.SVGLinks && source.SVGLinks.length > 0) {
+        for (const link of source.SVGLinks) {
+            switch (link.type) {
+                case "Rect":
+                    links += "        " + CreateSVGLink(link.args.target, link.args) + "\n";
+                    break;
+            }
+        }
     }
     return xhtml_template
         .replaceAll("{w}", source.image.width)
         .replaceAll("{h}", source.image.height)
         .replace("{href}", "../Images/" + source.mappedFilename)
+        .replace("{links}", links)
         .replace("{title}", title);
 }
 

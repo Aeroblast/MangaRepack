@@ -61,7 +61,7 @@ body {
     }
 }
 
-.toc_label, .landmark_label {
+.toc_label, .landmark_label, .svglinks_label {
     position: relative;
     height: 0em;
     width: 100%;
@@ -73,11 +73,11 @@ body {
     direction: ltr;
 }
 
-.toc_label[data-display="true"], .landmark_label[data-display="true"] {
+.toc_label[data-display="true"], .landmark_label[data-display="true"], .svglinks_label[data-display="true"] {
     display: block;
 }
 
-.toc_label>span, .landmark_label>span {
+.toc_label>span, .landmark_label>span, .svglinks_label>span {
     position: relative;
     height: 2rem;
     border-radius: 0.3rem;
@@ -96,6 +96,10 @@ body {
 
 .landmark_label>span {
     bottom: 7rem;
+}
+
+.svglinks_label>span {
+    bottom: 9rem;
 }
 
 .tab-pane {

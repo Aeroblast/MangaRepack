@@ -1,15 +1,29 @@
 <template>
-  <rect
-    ref="rect"
-    fill-opacity="0.5"
-    :data-edit="editType"
-    :x="x"
-    :y="y"
-    :width="width"
-    :height="height"
-    @mousedown="MouseDown($event)"
-    @mousemove="MouseMove($event)"
-  ></rect>
+  <g>
+    <text
+      :x="linkInfoRef.args.x"
+      :y="linkInfoRef.args.y + linkInfoRef.args.height / 2"
+      :font-size="linkInfoRef.args.height / 2"
+    >
+      {{
+        linkInfoRef.args && linkInfoRef.args.target
+          ? linkInfoRef.args.target.toc
+          : ""
+      }}
+    </text>
+    <rect
+      :data-active="id == activeId"
+      ref="rect"
+      fill-opacity="0.5"
+      :data-edit="editType"
+      :x="linkInfoRef.args.x"
+      :y="linkInfoRef.args.y"
+      :width="linkInfoRef.args.width"
+      :height="linkInfoRef.args.height"
+      @mousedown="MouseDown($event)"
+      @mousemove="MouseMove($event)"
+    ></rect>
+  </g>
 </template>
 
 <script>
@@ -18,26 +32,30 @@ export default {
   data() {
     return {
       type: "Rect",
-      x: 0,
-      y: 0,
-      width: 600,
-      height: 50,
+      //x: 0,
+      //y: 0,
+      //width: 600,
+      //height: 50,
       editType: "",
       editState: "",
     };
   },
-  props: { id: Number, needInit: Boolean, linkInfoRef: Object },
-  emits: ["init", "edit"],
+  props: {
+    id: Number,
+    activeId: Number,
+    needInit: Boolean,
+    linkInfoRef: Object,
+  },
+  emits: ["edit"],
   computed: {},
   methods: {
     UpdateArgs() {
-      this.linkInfoRef.args = {
-        x: this.x,
-        y: this.y,
-        width: this.width,
-        height: this.height,
-      };
-      console.log(this.linkInfoRef);
+      // this.linkInfoRef.args = {
+      //   x: this.x,
+      //   y: this.y,
+      //   width: this.width,
+      //   height: this.height,
+      // };
     },
     MouseDown(e) {
       this.$emit("edit", { target: this, event: e });
@@ -57,15 +75,7 @@ export default {
       }
     },
   },
-  mounted() {
-    if (this.linkInfoRef.args) {
-      this.x = this.linkInfoRef.args.x;
-      this.y = this.linkInfoRef.args.y;
-      this.width = this.linkInfoRef.args.width;
-      this.height = this.linkInfoRef.args.height;
-    }
-    this.$emit("init", this);
-  },
+  mounted() {},
 };
 </script>
 <style scoped>
