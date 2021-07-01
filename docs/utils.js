@@ -34,6 +34,8 @@ function GetMediaTypeFromExtension(ext) {
         case ".jpg":
         case ".jpeg":
             return "image/jpeg";
+        case ".png":
+            return "image/png";
     }
 }
 function uuidv4() {
