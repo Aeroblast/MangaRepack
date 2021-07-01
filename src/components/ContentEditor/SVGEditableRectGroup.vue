@@ -1,21 +1,39 @@
 <template>
+  <rect
+    fill-opacity="0.25"
+    v-for="(src, i) in linkInfoRef.args.targetArray"
+    :key="i"
+    :x="GetChildRectX(linkInfoRef.args, i)"
+    :y="GetChildRectY(linkInfoRef.args, i)"
+    :width="GetChildRectW(linkInfoRef.args, i)"
+    :height="GetChildRectH(linkInfoRef.args, i)"
+  >
+    <title>
+      {{ src ? src.toc : "" }}
+    </title>
+  </rect>
   <text
-    :clip-path="'url(#clip' + id + ')'"
-    :x="linkInfoRef.args.x"
-    :y="linkInfoRef.args.y + linkInfoRef.args.height / 2"
-    :font-size="linkInfoRef.args.height / 2"
+    v-for="(src, i) in linkInfoRef.args.targetArray"
+    :key="i"
+    :x="GetChildRectX(linkInfoRef.args, i)"
+    :y="
+      GetChildRectY(linkInfoRef.args, i) +
+      GetChildRectH(linkInfoRef.args, i) / 2
+    "
+    :font-size="GetChildRectH(linkInfoRef.args, i) / 2"
   >
     {{
-      linkInfoRef.args && linkInfoRef.args.target
-        ? linkInfoRef.args.target.toc
+      linkInfoRef.args && linkInfoRef.args.targetArray[i]
+        ? linkInfoRef.args.targetArray[i].toc
         : ""
     }}
   </text>
+
   <rect
-    class="edit"
+    class="group edit"
     :data-active="id == activeId"
     ref="rect"
-    fill-opacity="0.5"
+    fill-opacity="0.25"
     :data-edit="editType"
     :x="linkInfoRef.args.x"
     :y="linkInfoRef.args.y"
@@ -23,32 +41,21 @@
     :height="linkInfoRef.args.height"
     @mousedown="MouseDown($event)"
     @mousemove="MouseMove($event)"
-  >
-    <title>
-      {{
-        linkInfoRef.args && linkInfoRef.args.target
-          ? linkInfoRef.args.target.toc
-          : ""
-      }}
-    </title>
-  </rect>
-  <clipPath :id="'clip' + id">
-    <rect
-      :x="linkInfoRef.args.x"
-      :y="linkInfoRef.args.y"
-      :width="linkInfoRef.args.width"
-      :height="linkInfoRef.args.height"
-    >
-    </rect>
-  </clipPath>
+  ></rect>
 </template>
 
 <script>
+import {
+  GetChildRectX,
+  GetChildRectY,
+  GetChildRectW,
+  GetChildRectH,
+} from "../../RectGroup.js";
 export default {
-  name: "EditableRect",
+  name: "EditableRectGroup",
   data() {
     return {
-      type: "Rect",
+      type: "RectGroup",
       editType: "",
       editState: "",
     };
@@ -77,6 +84,18 @@ export default {
       } else {
         this.editType = "drag";
       }
+    },
+    GetChildRectX(args, i, rectW = 0) {
+      return GetChildRectX(args, i, rectW);
+    },
+    GetChildRectY(args, i, rectH = 0) {
+      return GetChildRectY(args, i, rectH);
+    },
+    GetChildRectW(args, i) {
+      return GetChildRectW(args);
+    },
+    GetChildRectH(args, i) {
+      return GetChildRectH(args);
     },
   },
   mounted() {},

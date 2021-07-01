@@ -1,3 +1,4 @@
+import { GetChildRectX, GetChildRectY, GetChildRectW, GetChildRectH } from "./RectGroup"
 const container =
     "<?xml version=\"1.0\" ?>\n<container version=\"1.0\" xmlns=\"urn:oasis:names:tc:opendocument:xmlns:container\">\n"
     + "  <rootfiles>\n    <rootfile full-path=\"OEBPS/manga.opf\" media-type=\"application/oebps-package+xml\"/>\n  </rootfiles>\n"
@@ -40,12 +41,12 @@ async function SaveEpub() {
     const blobWriter = new zip.BlobWriter("application/zip");
     const writer = new zip.ZipWriter(blobWriter);
 
-    const package = CreatePackage(sources);
+    const packageXML = CreatePackage(sources);
     const title = vm.$refs.metadataEditor.title.trim();
 
     await writer.add("mimetype", new zip.TextReader("application/epub+zip"), { level: 0, extendedTimestamp: false });
     await writer.add("META-INF/container.xml", new zip.TextReader(container));
-    await writer.add("OEBPS/manga.opf", new zip.TextReader(package));
+    await writer.add("OEBPS/manga.opf", new zip.TextReader(packageXML));
     await writer.add("OEBPS/nav.xhtml", new zip.TextReader(CreateNav(sources, title)));
 
 
@@ -130,7 +131,11 @@ function MapLandmark(s, lang) {
 
 function CreateSVGLink(target, rect) {
     let r = "<a xlink:href=\"" + target.id + ".xhtml" + "\" target=\"_top\">"
-        + "<rect fill-opacity=\"0.0\" x=\"" + rect.x + "\" y=\"" + rect.y + "\" width=\"" + rect.width + "\" height=\"" + rect.height + "\">"
+        + "<rect "
+        + "fill-opacity=\"0.0\" x=\"" + rect.x.toFixed(0)
+        + "\" y=\"" + rect.y.toFixed(0)
+        + "\" width=\"" + rect.width.toFixed(0)
+        + "\" height=\"" + rect.height.toFixed(0) + "\">"
         + "<title>" + target.toc + "</title></rect></a>";
     return r;
 
@@ -146,6 +151,16 @@ function CreateXhtml(source, title) {
             switch (link.type) {
                 case "Rect":
                     links += "        " + CreateSVGLink(link.args.target, link.args) + "\n";
+                    break;
+                case "RectGroup":
+                    let args = link.args;
+                    let rectW = GetChildRectW(args);
+                    let rectH = GetChildRectH(args);
+                    for (let i in args.targetArray) {
+                        links += "        "
+                            + CreateSVGLink(args.targetArray[i], { x: GetChildRectX(args, i, rectW), y: GetChildRectY(args, i, rectH), width: rectW, height: rectH })
+                            + "\n";
+                    }
                     break;
             }
         }
@@ -168,3 +183,6 @@ function MapEpubFilename(filename, exist) {
     }
     return r;
 }
+
+
+export { SaveEpub, MapSourceName, MapLandmark }

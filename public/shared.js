@@ -1,5 +1,5 @@
-const ratio = 1.414;//h/w
 var globleCounter = 0;
+const pageRatio = 1.414;
 var vm;
 function GenarateId() { globleCounter++; return globleCounter; }
 
@@ -17,7 +17,7 @@ var placeholderImage, placeholderThumbURL;
     //let s = new OffscreenCanvas(80, 80 * ratio);
     let s = document.createElement("canvas")
     s.width = 80;
-    s.height = 80 * ratio;
+    s.height = 80 * pageRatio;
     let c = s.getContext("2d");
     c.font = "10px Arial";
     c.fillText("Placeholder", 3, 40);
@@ -41,7 +41,7 @@ function CreateSourcePlaceholder(after_source) {
     return obj;
 }
 async function CreateThumbURL(image) {
-    const ow = 140, oh = ow * ratio;
+    const ow = 140, oh = ow * pageRatio;
     //let s = new OffscreenCanvas(ow, oh);
     let s = document.createElement("canvas")
     s.width = ow;

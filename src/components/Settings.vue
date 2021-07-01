@@ -42,6 +42,8 @@
 </template>
 
 <script>
+import { locale_zhCN, locale_en, GetUserLocale } from "../locale.js";
+
 export default {
   name: "Settings",
   props: {

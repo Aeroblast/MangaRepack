@@ -26,11 +26,17 @@
     </svg>
   </div>
   <div id="svg_editor">
-    <div>提示：先标记目录入口。</div>
-    <label>源文件：{{ source ? source.filename : "" }}</label>
+    <div class="alert alert-info" role="alert">
+      {{ ui.editor_note_toc_first }}
+    </div>
+    <label
+      >{{ ui.editor_source_filename }}：{{
+        source ? source.filename : ""
+      }}</label
+    >
     <div class="input-grpup">
       <button class="btn dropdown-toggle" data-toggle="dropdown" href="#">
-        添加链接
+        {{ ui.editor_add_svg_link }}
       </button>
       <div class="dropdown-menu">
         <a class="dropdown-item" href="#" @click="AddLink('Rect')">Rect</a>
@@ -45,7 +51,7 @@
         v-if="this.currentMenu"
         v-on:click="RemoveCurrent"
       >
-        删除选中项
+        {{ ui.editor_delete_selected }}
       </button>
     </div>
 
@@ -64,9 +70,16 @@
 <script>
 import EditableRect from "./SVGEditableRect.vue";
 import EditableRectMenu from "./SVGEditableRectMenu.vue";
+import EditableRectGroup from "./SVGEditableRectGroup.vue";
+import EditableRectGroupMenu from "./SVGEditableRectGroupMenu.vue";
 export default {
   name: "SVGLinkEditor",
-  components: { EditableRect, EditableRectMenu },
+  components: {
+    EditableRect,
+    EditableRectMenu,
+    EditableRectGroup,
+    EditableRectGroupMenu,
+  },
   data() {
     return {
       currentMouseEdit: null, //current Editable
@@ -88,6 +101,7 @@ export default {
       //SVGLink.id
       //SVGLink.args
       //Rect target width height x y
+      //RectGroup targetArray width height x y writingMode(horizontal-tb/vertical-rl) gap
       if (!this.source) return [];
       if (!this.source.SVGLinks) {
         this.source.SVGLinks = [];
@@ -162,7 +176,6 @@ export default {
           this.currentMouseEdit.linkInfoRef.args.height
         );
         this.currentMouseEdit.editState = "";
-        this.currentMouseEdit.UpdateArgs();
         this.currentMouseEdit = null;
       }
     },
@@ -177,11 +190,21 @@ export default {
             height: this.height / 8,
           };
           break;
+        case "RectGroup":
+          args = {
+            x: 0,
+            y: 0,
+            width: this.width / 2,
+            height: this.height / 2,
+            targetArray: [null, null, null],
+            writingMode: "horizontal-tb",
+            gap: 10,
+          };
+          break;
       }
       this.links.push({
         type: type,
         id: GenarateId(),
-        needInit: true,
         args: args,
       });
     },
@@ -207,7 +230,7 @@ svg {
   max-height: 100%;
   max-width: 100%;
 }
-rect:hover {
+rect.edit:hover {
   fill: #ff8800 !important;
 }
 rect[data-active="true"] {

@@ -79,6 +79,22 @@ const locale_all = {
         "目录入口",
         "Content"
     ],
+    editor_delete_selected: [
+        "删除选中项", 
+        "Delete selection"
+    ],
+    editor_note_toc_first:[
+        "提示：先编辑好目录，才可在SVG编辑器中选择目录项。",
+        "Note: Add toc entries first, then you can select the entries in SVG editor."
+    ],
+    editor_source_filename:[
+        "源文件",
+        "Source"
+    ],
+    editor_add_svg_link:[
+        "添加链接",
+        "Add link"
+    ],
     metadata_language: [
         "语言",
         "Language"
@@ -168,3 +184,5 @@ function GetUserLocale() {
             return locale_en;
     }
 }
+
+export {locale_zhCN,locale_en,GetUserLocale}

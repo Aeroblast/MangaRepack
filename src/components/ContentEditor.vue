@@ -163,7 +163,7 @@ export default {
     });
     let pv = this.$refs.pageViewer;
     pv.width = window.innerWidth;
-    pv.height = (pv.width / 2) * ratio;
+    pv.height = (pv.width / 2) * pageRatio;
   },
   computed: {
     selectedSourceR() {

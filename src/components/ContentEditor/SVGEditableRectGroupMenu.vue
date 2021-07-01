@@ -3,7 +3,8 @@
     class="svg_element_menu card card-body mt-3"
     :data-active="id == activeId"
   >
-    <label>[Rect] id={{ id }}</label>
+    <label>[RectGroup] id={{ id }}</label>
+
     <div class="form-row">
       <div class="form-group col-md-3">
         <label>x</label>
@@ -38,11 +39,33 @@
         />
       </div>
     </div>
-    <div class="input-group w-50">
+    <div class="form-row">
+      <div class="form-group col-md-3">
+        <label>gap</label>
+        <input
+          type="number"
+          class="form-control"
+          v-model.number="linkInfoRef.args.gap"
+        />
+      </div>
+      <div class="form-group col-md-3">
+        <label>count</label>
+        <input type="number" class="form-control" v-model.number="count" />
+      </div>
+    </div>
+    <div
+      class="input-group w-50"
+      v-for="(src, i) in linkInfoRef.args.targetArray"
+      :key="i"
+    >
       <div class="input-group-prepend">
         <label class="input-group-text">TOC Entry</label>
       </div>
-      <select class="custom-select" v-model="link">
+      <select
+        class="custom-select"
+        @change="SetLink($event.target.value, i)"
+        :value="src ? src.filename : null"
+      >
         <option :value="null">- - -</option>
         <option
           v-for="entry in availableEntries"
@@ -58,7 +81,7 @@
 
 <script>
 export default {
-  name: "EditableRectMenu",
+  name: "EditableRectGroupMenu",
   data() {
     return {};
   },
@@ -69,7 +92,14 @@ export default {
     activeId: Number,
   },
   emits: [],
-  methods: {},
+  methods: {
+    SetLink(newValue, i) {
+      for (const entry of this.availableEntries) {
+        if (entry.filename == newValue) this.linkInfoRef.args.targetArray[i] = entry;
+      }
+      console.log(this.linkInfoRef.args.targetArray);
+    },
+  },
   computed: {
     link: {
       get() {
@@ -80,6 +110,20 @@ export default {
       set(newValue) {
         for (const entry of this.availableEntries) {
           if (entry.filename == newValue) this.linkInfoRef.args.target = entry;
+        }
+      },
+    },
+    count: {
+      get() {
+        return this.linkInfoRef.args.targetArray.length;
+      },
+      set(newValue) {
+        if (newValue < this.linkInfoRef.args.targetArray.length) {
+          while (newValue != this.linkInfoRef.args.targetArray.length)
+            this.linkInfoRef.args.targetArray.pop();
+        } else {
+          while (newValue != this.linkInfoRef.args.targetArray.length)
+            this.linkInfoRef.args.targetArray.push(null);
         }
       },
     },

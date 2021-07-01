@@ -43,7 +43,6 @@
           id="nav_preview"
           data-toggle="tab"
           href="#preview"
-          onclick="MapSourceName()"
           >{{ ui.nav_preview }}</a
         >
       </li>
@@ -107,6 +106,8 @@ import ContentEditor from "./components/ContentEditor.vue";
 import MetadataEditor from "./components/MetadataEditor.vue";
 import Preview from "./components/Preview.vue";
 
+import { locale_zhCN, locale_en, GetUserLocale } from "./locale.js";
+import { SaveEpub, MapSourceName, MapLandmark } from "./save-epub";
 export default {
   name: "App",
   components: {
@@ -130,7 +131,7 @@ export default {
   },
   computed: {},
   mounted() {
-    vm = this;
+    vm = this; //for public content
     $(document).ready(function () {
       $('[data-toggle="tooltip"]').tooltip();
     });
@@ -206,6 +207,7 @@ async function ProcInputFiles(files) {
       .replaceAll("/", " ")
       .replace(".zip", "");
   vm.sources.sort(sortSourceByFullPath);
+  MapSourceName();
   logValueChange("input count", null, 0, vm.sources.length + "");
   logValueChangeEnd();
 }
