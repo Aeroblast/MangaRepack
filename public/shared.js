@@ -5,10 +5,14 @@ function GenarateId() { globleCounter++; return globleCounter; }
 
 async function CreateSource(blob, name, from) {
     let obj = new Object();
-    obj.image = await createImageBitmap(blob);
+    //obj.image = await createImageBitmap(blob);//May face memory problem
+    obj.getImage = async function () { return await createImageBitmap(blob) }
     obj.filename = name;
     obj.blob = blob;
-    obj.thumbURL = await CreateThumbURL(obj.image);
+    let image = await obj.getImage();
+    obj.width = image.width;
+    obj.height = image.height;
+    obj.thumbURL = await CreateThumbURL(image);
     obj.from = from; //archive file placeholder
     return obj;
 }

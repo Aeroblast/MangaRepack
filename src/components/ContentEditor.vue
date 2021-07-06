@@ -194,7 +194,7 @@ export default {
       let index = this.sources.indexOf(e);
       this.ActivePage(index);
     },
-    ActivePage(index) {
+    async ActivePage(index) {
       if (index == 0) {
         this.selected = 0;
         this.pageEditorSp = "cover";
@@ -219,19 +219,19 @@ export default {
       ctx.clearRect(0, 0, canvas.width, canvas.height);
       if (this.selected == 0) {
         //center
-        let img = this.sources[0].image;
+        let img = await this.sources[0].getImage();
         let fit = FitImage(img, canvas.width, canvas.height);
         ctx.drawImage(img, fit[0], fit[1], fit[2], fit[3]);
       } else {
         {
           //right
-          let img = this.sources[this.selected].image;
+          let img = await this.sources[this.selected].getImage();
           let fit = FitImage(img, canvas.width / 2, canvas.height);
           ctx.drawImage(img, canvas.width / 2, fit[1], fit[2], fit[3]);
         }
         if (this.selected + 1 < this.sources.length) {
           //left
-          let img = this.sources[this.selected + 1].image;
+          let img = await this.sources[this.selected + 1].getImage();
           let fit = FitImage(img, canvas.width / 2, canvas.height);
           if (fit[0] > 0) fit[0] = canvas.width / 2 - fit[2];
           ctx.drawImage(img, fit[0], fit[1], fit[2], fit[3]);

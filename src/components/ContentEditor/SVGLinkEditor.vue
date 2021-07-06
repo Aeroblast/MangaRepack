@@ -110,12 +110,12 @@ export default {
     },
     width() {
       if (this.source && this.source.from != "placeholder") {
-        return this.source.image.width;
+        return this.source.width;
       } else return 1070;
     },
     height() {
       if (this.source && this.source.from != "placeholder") {
-        return this.source.image.height;
+        return this.source.height;
       } else return 1600;
     },
     imageDateURL() {
