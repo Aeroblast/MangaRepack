@@ -41,8 +41,8 @@
     >
       {{
         source && source.SVGLinks && source.SVGLinks.length > 0
-          ? "编辑图形目录"
-          : "添加图形目录"
+          ? ui.editor_edit_SVG
+          : ui.editor_add_SVG
       }}
     </button>
     <button

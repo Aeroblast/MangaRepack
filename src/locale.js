@@ -75,23 +75,31 @@ const locale_all = {
         "导航",
         "Guide"
     ],
+    editor_edit_SVG: [
+        "编辑SVG目录",
+        "Edit SVG toc"
+    ],
+    editor_add_SVG: [
+        "增加SVG目录",
+        "Add SVG toc"
+    ],
     editor_toc_entry: [
         "目录入口",
         "Content"
     ],
     editor_delete_selected: [
-        "删除选中项", 
+        "删除选中项",
         "Delete selection"
     ],
-    editor_note_toc_first:[
+    editor_note_toc_first: [
         "提示：先编辑好目录，才可在SVG编辑器中选择目录项。",
         "Note: Add toc entries first, then you can select the entries in SVG editor."
     ],
-    editor_source_filename:[
+    editor_source_filename: [
         "源文件",
         "Source"
     ],
-    editor_add_svg_link:[
+    editor_add_svg_link: [
         "添加链接",
         "Add link"
     ],
@@ -185,4 +193,4 @@ function GetUserLocale() {
     }
 }
 
-export {locale_zhCN,locale_en,GetUserLocale}
+export { locale_zhCN, locale_en, GetUserLocale }
