@@ -241,6 +241,8 @@ rect[data-active="true"] {
 }
 .svg_element_menu[data-active="true"] {
   display: block;
+  overflow: scroll;
+  max-height: 80%;
 }
 #svg_editor {
   display: inline-block;

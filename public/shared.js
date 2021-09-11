@@ -34,6 +34,7 @@ var placeholderImage, placeholderThumbURL;
 function CreateSourcePlaceholder(after_source) {
     let obj = new Object();
     obj.image = placeholderImage;
+    obj.getImage = function () { return obj.image }
     obj.filename =
         after_source.filename.Path_GetDirectory() +
         "" +
@@ -42,6 +43,8 @@ function CreateSourcePlaceholder(after_source) {
     obj.blob = null;
     obj.thumbURL = placeholderThumbURL;
     obj.from = "placeholder";
+    obj.width = obj.image.width;
+    obj.height = obj.image.height;
     return obj;
 }
 async function CreateThumbURL(image) {

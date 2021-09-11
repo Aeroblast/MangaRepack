@@ -166,8 +166,8 @@ function CreateXhtml(source, title) {
         }
     }
     return xhtml_template
-        .replaceAll("{w}", source.image.width)
-        .replaceAll("{h}", source.image.height)
+        .replaceAll("{w}", source.width)
+        .replaceAll("{h}", source.height)
         .replace("{href}", "../Images/" + source.mappedFilename)
         .replace("{links}", links)
         .replace("{title}", title);
